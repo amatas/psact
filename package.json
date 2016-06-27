@@ -1,0 +1,15 @@
+{
+  "name": "PSACT",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.2.6",
+    "ejs": "2.3.4",
+    "cookie-parser": "1.4.0",
+    "nano": "6.1.5",
+    "nodemailer": "2.4.2"
+  }
+}

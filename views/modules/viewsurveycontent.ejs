@@ -1,0 +1,70 @@
+<script>
+function deployQuestion(id)
+{
+	var options = <%- JSON.stringify(options)%>;
+	$('#q'+id+'data').empty();
+	$.post('/fetchquestion', {id: id, options: options}, function(data)
+	{
+		if(data.success)
+		{
+			$('#q'+id+'data').append(data.content);
+			$('#q'+id+'data').slideDown();
+			$('#q'+id+'title').attr("onclick", "retractQuestion("+id+");");
+		}
+	});
+}
+function retractQuestion(id)
+{
+	$('#q'+id+'data').slideUp();
+	$('#q'+id+'title').attr("onclick", "deployQuestion("+id+");");
+}
+function showAll()
+{
+<%for(var i = 0; i < questions.length; i++){%>
+deployQuestion("<%=questions[i].id;%>");
+<%}%>
+}
+function hideAll()
+{
+<%for(var i = 0; i < questions.length; i++){%>
+retractQuestion("<%=questions[i].id;%>");
+<%}%>
+}
+</script>
+<p>
+SURVEY TITLE: <%= title; %>
+<button onclick="showAll();">Show All</button>
+<button onclick="hideAll();">Hide All</button>
+<span style="float:right;">
+<button onclick="gohome();">Home</button>
+<button onclick="logout();">Log Out</button>
+</span>
+<br/>
+<%var d = new Date(exptime);%>
+<%=' Expired ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+</p>
+<%for(var i = 0; i < questions.length; i++){%>
+<div id="<%=questions[i].id;%>" class="qid"></div>
+<div id="q<%= questions[i].id; %>box">
+	<table border="1" width="1000px">
+		<tr>
+			<td id="q<%= questions[i].id; %>title" onclick="deployQuestion(<%= questions[i].id; %>);//$('#q<%= questions[i].id; %>data').slideToggle('slow');//alert('AYY');">
+				<%= i + 1; %>: <%= questions[i].title; %>
+			</td>
+		</tr>
+	</table>
+	<div id="q<%= questions[i].id; %>data" class="qdata" style="display:none">
+		<table border="1" width="1000px">
+			<tbody>
+				<tr>
+					<td>
+						ERROR
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<br/>
+<br/>
+<%}%>

@@ -1,0 +1,200 @@
+<% include ../modules/head %>
+<script>
+function loadpage()
+{
+	$('#homecontent').empty();
+	$.post('/fetchhomepage', {}, function(data)
+	{
+		if(data.status)
+		{
+			$('#homecontent').append(data.content);
+		}
+		else
+		{
+			logout();
+		}
+	});
+}
+function logout()
+{
+	Cookies.wipe();
+	window.location.replace('/');
+}
+function openchangename()
+{
+	$('#namestatic').slideUp('slow');
+	$('#nameedit').slideDown('slow');
+}
+function closechangename()
+{
+	$('#namestatic').slideDown('slow');
+	$('#nameedit').slideUp('slow');
+}
+function changename()
+{
+	$.post('/changename', {text:$('#editnametext').val()}, function(data)
+	{
+		loadpage();
+	});
+}
+function openeditbio()
+{
+	$('#biostatic').slideUp('slow');
+	$('#bioedit').slideDown('slow');
+}
+function closeeditbio()
+{
+	$('#biostatic').slideDown('slow');
+	$('#bioedit').slideUp('slow');
+}
+function editbio()
+{
+	$.post('/changebio', {text:$('#editbiotext').val()}, function(data)
+	{
+		loadpage();
+	});
+}
+function entertake(name, pass)
+{
+	Cookies.set('survname', name);
+	Cookies.set('survpass', pass);
+	Cookies.set('access', 'take');
+	window.location.replace('/survey');
+}
+function enteredit(name, pass)
+{
+	Cookies.set('survname', name);
+	Cookies.set('survpass', pass);
+	Cookies.set('access', 'edit');
+	window.location.replace('/survey');
+}
+function enterview(name, pass)
+{
+	Cookies.set('survname', name);
+	Cookies.set('survpass', pass);
+	Cookies.set('access', 'view');
+	window.location.replace('/survey');
+}
+function expandregistersurvey()
+{
+	$('#collapsedregistersurvey').slideUp('slow');
+	$('#expandedregistersurvey').slideDown('slow');
+}
+function collapseregistersurvey()
+{
+	$('#expandedregistersurvey').slideUp('slow');
+	$('#collapsedregistersurvey').slideDown('slow');
+	$('#editorregistersurvey').slideUp('slow');
+	$('#clientregistersurvey').slideDown('slow');
+}
+function clientregistersurvey()
+{
+	var login = {
+	name: $('#registersurveyname').val(),
+	pass: $('#registersurveypass').val()
+	};
+	$.post('/registerclienttosurvey', login, function(data)
+	{
+		if(data.status)
+		{
+			loadpage();
+			alert('Registration successful');
+		}
+		else
+		{
+			alert(data.error);
+		}
+	});
+}
+function editorregistersurvey()
+{
+	var login = {
+	name: $('#registersurveyname').val(),
+	editpass: $('#registersurveyeditpass').val()
+	};
+	$.post('/registereditortosurvey', login, function(data)
+	{
+		if(data.status)
+		{
+			loadpage();
+			alert('Registration successful');
+		}
+		else
+		{
+			alert(data.error);
+		}
+	});
+}
+function expandclientregister()
+{
+	$('#editorregistersurvey').slideUp('slow');
+	$('#clientregistersurvey').slideDown('slow');
+}
+function expandeditorregister()
+{
+	$('#clientregistersurvey').slideUp('slow');
+	$('#editorregistersurvey').slideDown('slow');
+}
+function expandcreatesurvey()
+{
+	$('#collapsedcreatesurvey').slideUp('slow');
+	$('#expandedcreatesurvey').slideDown('slow');
+}
+function collapsecreatesurvey()
+{
+	$('#expandedcreatesurvey').slideUp('slow');
+	$('#collapsedcreatesurvey').slideDown('slow');
+}
+function createsurvey()
+{
+//alert(Date().parse(0));
+	if($('#newsurveyname').val() == '') alert('Please enter a survey name');
+	else if($('#newsurveypass1').val() == '') alert('Please enter a client password');
+	else if($('#newsurveypass1').val() != $('#newsurveypass2').val()) alert('Client passwords do not match');
+	else if($('#newsurveyeditpass1').val() == '') alert('Please enter an editor password');
+	else if($('#newsurveyeditpass1').val() != $('#newsurveyeditpass2').val()) alert('Editor passwords do not match');
+	else if(!($('#newsurveyexpmonth').val() >= 1 && $('#newsurveyexpmonth').val() <= 12)) alert('Invalid expiration month' + $('#newsurveyexpmonth').val());
+	else if(!($('#newsurveyexpday').val() >= 1 && $('#newsurveyexpday').val() <= 31)) alert('Invalid expiration day');
+	else if(!($('#newsurveyexpyear').val() >= 0)) alert('Invalid expiration year');
+	else if(!($('#newsurveyexphour').val() >= 0 && $('#newsurveyexphour').val() <= 24)) alert('Invalid expiration hour');
+	else if(!($('#newsurveyexpmin').val() >= 0 && $('#newsurveyexpmin').val() <= 59)) alert('Invalid expiration minute');
+	else
+	{
+		var time = new Date($('#newsurveyexpyear').val(), $('#newsurveyexpmonth').val() - 1, $('#newsurveyexpday').val(), $('#newsurveyexphour').val(), $('#newsurveyexpmin').val(), 0, 0);
+		var survey = {
+			name: $('#newsurveyname').val(),
+			pass: $('#newsurveypass1').val(),
+			editpass: $('#newsurveyeditpass1').val(),
+			exptime: time.getTime()
+		};
+		$.post('/createsurvey', survey, function(data)
+		{
+			if(data.status)
+			{
+				$.post('/registereditortosurvey', survey, function(data)
+				{
+					if(data.status)
+					{
+						loadpage();
+						alert('Survey successfully created');
+					}
+					else
+					{
+						alert(data.error);
+					}
+				});
+			}
+			else
+			{
+				alert(data.msg);
+			}
+		});
+	}
+}
+
+loadpage();
+</script>
+<div id="homecontent"></div>
+<% include ../modules/footer %>
+</body>
+</html>

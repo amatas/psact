@@ -1,0 +1,91 @@
+<script>
+var options = <%- JSON.stringify(options)%>;
+var surveytitle = '<%=title;%>';
+function deployQuestion(id)
+{
+	//var options = <%- JSON.stringify(options)%>;
+	var scroll = $(window).scrollTop();
+	$('#q'+id+'data').empty();
+	$.post('/fetchquestion', {id: id, options: options}, function(data)
+	{
+		if(data.success)
+		{
+			$('#q'+id+'data').append(data.content);
+			$('#q'+id+'data').slideDown();
+			$('#q'+id+'expand').attr("onclick", "retractQuestion("+id+");");
+			$('#q'+id+'expand').text("Retract Question");
+			$(window).scrollTop(scroll);
+		}
+	});
+}
+function retractQuestion(id)
+{
+	$('#q'+id+'data').slideUp();
+	$('#q'+id+'expand').attr("onclick", "deployQuestion("+id+");");
+	$('#q'+id+'expand').text("Expand Question");
+}
+function showAll()
+{
+<%for(var i = 0; i < questions.length; i++){%>
+deployQuestion("<%=questions[i].id;%>");
+<%}%>
+}
+function hideAll()
+{
+<%for(var i = 0; i < questions.length; i++){%>
+retractQuestion("<%=questions[i].id;%>");
+<%}%>
+}
+</script>
+<p>
+SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
+<button onclick="showAll();">Show All</button>
+<button onclick="hideAll();">Hide All</button>
+<span style="float:right;">
+<button onclick="gohome();">Home</button>
+<button onclick="logout();">Log Out</button>
+</span>
+<br/>
+<%var d = new Date(exptime);%>
+<%=' Expires ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+</p>
+<%for(var i = 0; i < questions.length; i++){%>
+<div id="<%=questions[i].id;%>" class="qid"></div>
+<div id="q<%= questions[i].id; %>box">
+	<table border="1" width="1000px">
+		<tr>
+			<td id="q<%= questions[i].id; %>title">
+				<%= i + 1; %>: <input id="q<%=questions[i].id;%>titlefield" type="text" style="width: 500px" value="<%= questions[i].title; %>" onBlur="changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');" onkeypress="onEnter(event, function(){changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');})">
+				<button onclick="changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');">Change Title</button>
+				<button style="float:right;" onclick="removeQuestion(<%=questions[i].id;%>);">Remove Question</button>
+				<button id="q<%=questions[i].id%>expand" style="float:right;" onclick="deployQuestion(<%=questions[i].id;%>);">Expand Question</button>
+			</td>
+		</tr>
+	</table>
+	<div id="q<%= questions[i].id; %>data" class="qdata" style="display:none">
+		<table border="1" width="1000px">
+			<tbody>
+				<tr>
+					<td>
+						ERROR
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+<br/>
+<br/>
+<%}%>
+<button onclick="newQuestion();">Add New Question</button>
+<br/>
+<h1>SURVEY OPTIONS:</h1>
+<p>
+	Show vote tallies on active surveys: <input type="checkbox" id="optshowtallyontake" onclick="changeOptions();" <%if(options.showtallyontake){%>checked<%}%>>
+<br/>
+	Show vote tallies on expired surveys: <input type="checkbox" id="optshowtallyonview" onclick="changeOptions();" <%if(options.showtallyonview){%>checked<%}%>>
+<br/>
+	Show other responses on active surveys: <input type="checkbox" id="optshowrespontake" onclick="changeOptions();" <%if(options.showrespontake){%>checked<%}%>>
+<br/>
+	Show other responses on expired surveys: <input type="checkbox" id="optshowresponview" onclick="changeOptions();" <%if(options.showresponview){%>checked<%}%>>
+</p>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>
+		PSACT
+	</title>
+	<script src="/script/jquery"></script>
+	<script src="/script/ejs"></script>
+	<script src="/script/utility"></script><script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+</head>
+<body>
+HEADER STUFF HERE
+<script>
+function login()
+{
+	if($('#loginname').val() == '') alert('Please enter a username');
+	else if($('#loginpass').val() == '') alert('Please enter a password');
+	else
+	{
+		if($('#loginrememberme').prop('checked'))
+		{
+			Cookies.set('name', $('#loginname').val(), 24);
+			Cookies.set('pass', $('#loginpass').val(), 24);
+		}
+		else
+		{
+			Cookies.set('name', $('#loginname').val());
+			Cookies.set('pass', $('#loginpass').val());
+		}
+		
+		$.post('/usercheck', {}, function(data)
+		{
+			if(data.status == true)
+			{
+				window.location.replace('/home');
+			}
+			else
+			{
+				alert('Invalid login');
+			}
+		});
+	}
+};
+function create()
+{
+	if($('#createname').val() == '') alert('Please enter a username');
+	else if($('#createpass').val() == '') alert('Please enter a password');
+	else
+	{
+		if($('#createremembername').attr('checked'))
+		{
+			Cookies.set('name', $('#createname').val(), 24);
+			Cookies.set('pass', $('#createpass').val(), 24);
+		}
+		else
+		{
+			Cookies.set('name', $('#createname').val());
+			Cookies.set('pass', $('#createpass').val());
+		}
+		$.post('/registeruser', {}, function(data)
+		{
+			if(data.status > 0) window.location.replace('/home');
+			else if(data.status == 0) alert('Username taken');
+			else alert('Error, please reload the page');
+		});
+	}
+};
+function swaptocreate()
+{
+	$("#LOGIN").slideUp("slow");
+	$("#CREATE").slideDown("slow");
+};
+function swaptologin()
+{
+	$("#CREATE").slideUp("slow");
+	$("#LOGIN").slideDown("slow");
+};
+</script>
+<br/>
+<div id="LOGIN">
+<h1>Login to PSACT</h1>
+<input id="loginname" type="text" placeholder="Username"></input><br/>
+<input id="loginpass" type="password" placeholder="Password"></input><br/>
+<input id="loginrememberme" type="checkbox">Remember me</input><br/>
+<button onclick="login()">Login</button>
+<button onclick="swaptocreate()">Create new account</button>
+</div>
+<div id="CREATE" style="display:none">
+<h1>Create new PSACT account</h1>
+<input id="createname" type="text" placeholder="Username"></input><br/>
+<input id="createpass" type="password" placeholder="Password"></input><br/>
+<input id="createrememberme" type="checkbox">Remember me</input><br/>
+<button onclick="create()">Create account</button>
+<button onclick="swaptologin()">Return to login</button>
+</div>
+
+<p class="text-center text-muted">FOOTER STUFF HERE</p>
+<script src="/script/ejs"></script>
+</body>
+</html>

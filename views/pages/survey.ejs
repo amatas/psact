@@ -1,0 +1,180 @@
+<% include ../modules/head %>
+<script>
+var questions = new Array();
+function loadPage()
+{
+	$('#surveycontent').empty();
+	$.post('/fetchsurvey', {}, function(data)
+	{
+		if(data.success)
+		{
+			$('#surveycontent').append(data.content);
+		}
+		else
+		{
+			alert(data.message);
+			gohome();
+		}
+	});
+}
+function getBio(name)
+{
+	$.post('/getuserbio', {name: name}, function(data)
+	{
+		alert(name + "'s info: " + data.bio);
+	});
+}
+function gohome()
+{
+	Cookies.wipesurv();
+	window.location.replace('/home');
+}
+function logout()
+{
+	Cookies.wipe();
+	window.location.replace('/');
+}
+function changeResponse(id, answer, comment, callback)
+{
+	$.post('/changeresponse', {id: id, answer: answer, comment: comment}, function(data)
+	{
+		if(data.success)
+		{
+			callback(id);
+		}
+	});
+}
+function removeResponse(id, callback)
+{
+	$.post('/removeresponse', {id: id}, function(data)
+	{
+		if(data.success)
+		{
+			callback(id);
+		}
+	});
+}
+function newQuestion()
+{
+	$.post('/newquestion', {}, function(data)
+	{
+		if(data)
+		{
+			loadPage();
+		}
+	});
+}
+function removeQuestion(id)
+{
+	$.post('/removequestion', {id: id}, function(data)
+	{
+		if(data)
+		{
+			loadPage();
+		}
+	});
+}
+function changeTitle()
+{
+	if(surveytitle != $('#surveytitle').val())
+	{
+		$.post('/changetitle', {newtitle: $('#surveytitle').val()}, function(data)
+		{
+			if(data)
+			{
+				loadPage();
+			}
+		});
+	}
+}
+function changeQTitle(id, prevtitle)
+{
+	if($('#q'+id+'titlefield').val() != prevtitle)
+	{
+		$.post('/changeqtitle', {id: id, newtitle: $('#q'+id+'titlefield').val()}, function(data)
+		{
+			if(data)
+			{
+				loadPage();
+			}
+		});
+	}
+}
+function saveDescription(id, nd)
+{
+	if(nd != questions[id].description)
+	{
+		$.post('/updatedescription', {id: id, description: nd}, function(data)
+		{
+			if(data)
+			{
+				deployQuestion(id);
+			}
+		});
+	}
+}
+function changeOptions()
+{
+	var newOptions = {
+		showtallyonview: $('#optshowtallyonview').prop('checked'),
+		showtallyontake: $('#optshowtallyontake').prop('checked'),
+		showresponview: $('#optshowresponview').prop('checked'),
+		showrespontake: $('#optshowrespontake').prop('checked')
+	};
+	$.post('/updateoptions', {options: newOptions}, function(data)
+	{
+		if(!data) loadPage();
+	});
+}
+function addAnswer(id)
+{
+	questions[id].answers.push("New Answer");
+	$.post('/updateanswers', {id: id, answers: questions[id].answers}, function(data)
+	{
+		if(data)
+		{
+			deployQuestion(id);
+		}
+	});
+}
+function removeAnswer(id, i)
+{
+	questions[id].answers.splice(i, 1);
+	$.post('/updateanswers', {id: id, answers: questions[id].answers}, function(data)
+	{
+		if(data)
+		{
+			deployQuestion(id);
+		}
+	});
+}
+function renameAnswer(id, i, name)
+{
+	questions[id].answers[i] = name;
+	$.post('/updateanswers', {id: id, answers: questions[id].answers}, function(data)
+	{
+		if(data)
+		{
+			deployQuestion(id);
+		}
+	});
+}
+function setAnswers(id, answers)
+{
+	$.post('/updateanswers', {id: id, answers: answers}, function(data)
+	{
+		if(data)
+		{
+			deployQuestion(id);
+		}
+	});
+}
+
+loadPage();
+</script>
+
+<div id="surveycontent"></div>
+
+<% include ../modules/footer %>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<% include ../modules/head %>
+<script>
+$.post('/processrequest', {num: <%=num%>}, function(data)
+{
+	if(data.success)
+	{
+		$('#replace').empty();
+		$('#replace').append(data.content);
+	}
+});
+</script>
+<div id="replace">
+	<p>
+		PROCESSING REQUEST...
+	</p>
+</div>
+<% include ../modules/footer %>
+</body>
+</html>

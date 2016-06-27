@@ -1,0 +1,125 @@
+<% var you = -1; %>
+<% var showtally = true; %>
+<% var showresp = true; %>
+<% var yourcomment = "" %>
+<% var youranswer = -1 %>
+<% var hascommented = false; %>
+<% for(var i = 0; i < responses.length; i++){ %>
+<% if(responses[i].name == username) { %>
+<% you = i; %>
+<% hascommented = true; %>
+<% yourcomment = responses[i].comment; %>
+<% youranswer = responses[i].answer; %>
+<% } %>
+<% } %>
+<% if(showtally){ %>
+<% var tallies = []; %>
+<% for(var i = 0; i < answers.length; i++){ %>
+<% tallies.push(0); %>
+<% } %>
+<% for(var i = 0; i < responses.length; i++){ %>
+<% if(responses[i].answer >= 0){ %>
+<% tallies[responses[i].answer]++; %>
+<% } %>
+<% } %>
+<% } %>
+<script>
+questions[<%=id;%>] = {
+	title: "<%=title;%>",
+	description: "<%=description;%>"
+	answers: <%-JSON.stringify(answers);%>
+};
+/*
+if(tinyMCE)
+{
+	tinyMCE.remove();
+	tinyMCE.init({ 
+		selector:'.MCE',
+		min_height:'500',
+		setup: function(editor)
+		{
+			editor.on('blur', function(e) {
+				saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());
+			});
+		}
+	});
+}
+//*/
+</script>
+<table border="1" width="1000px">
+	<tbody>
+		<tr>
+			<%if(showtally){%>
+			<td colspan="2">
+			<%}else{%>
+			<td>
+			<%}%>
+				<div id="q<%=id%>description" class="MCE">
+				<%-description%>
+				</div>
+				<!--<button style="float:right" onclick="saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());">Save Description</button>-->
+			</td>
+		</tr>
+		<%for(var i = 0; i < answers.length; i++){%>
+		<%if(youranswer == i){%>
+		<tr style="background-color:lightblue; font-weight:bold">
+		<%}else{%>
+		<tr>
+		<%}%>
+			<td>
+				<input type="checkbox"<%if(youranswer == i){%> checked<%}%>>
+				<input style="width:500px" type="text" id="q<%=id%>answer<%=i%>" value="<%= answers[i]; %>">
+				<button onclick="renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());">Rename Answer</button>
+				<button style="float:right" onclick="removeAnswer(<%=id%>, <%=i%>);">Remove Answer</button>
+				<button style="float:right" onclick="changeResponse(<%=id%>, <%=i%>, '<%=yourcomment%>', deployQuestion);">Select Answer</button>
+			</td>
+			<%if(showtally){%>
+			<td width="100px"><%= tallies[i]; %> total</td>
+			<%}%>
+		</tr>
+		<%}%>
+		<tr>
+			<td<%if(showtally){%> colspan="2"<%}%>>
+			<button onclick="addAnswer(<%=id%>);">Add Answer</button>
+			<button style="float:right" onclick="setAnswers(<%=id%>, ['Accept As-Is', 'Accept With the Following Changes', 'Reject For the Following Reasons']);">Accept/Change/Reject</button>
+			<button style="float:right" onclick="setAnswers(<%=id%>, ['Yes', 'No']);">Yes/No</button>
+			<span style="float:right">PRESETS:</span>
+			</td>
+		</tr>
+		<tr>
+			<%if(showtally){%>
+			<td colspan="2">
+			<%}else{%>
+			<td>
+			<%}%>
+				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write a comment on your answer."><%=yourcomment;%></textarea>
+				<br/>
+				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeAnswer(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), retractQuestion);} else {retractQuestion(<%=id%>)}">Submit</button>
+				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeAnswer(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), deployQuestion);}">Save</button>
+				<button style="float:right" onclick="removeResponse(<%=id%>, deployQuestion);">Remove Response</button>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<%if(showresp){%>
+<table border="1" width="1000px">
+	<tbody>
+		<tr>
+			<th>Name</th>
+			<th>Selection</th>
+			<th>Comment</th>
+		</tr>
+		<%for(var i = 0; i < responses.length; i++){%>
+		<%if(i == you){%>
+		<tr style="background-color:lightblue; font-weight:bold">
+		<%}else{%>
+		<tr>
+		<%}%>
+			<td onclick="getBio('<%=responses[i].email;%>');"><%=responses[i].name;%></td>
+			<td><%= (responses[i].answer >= 0) ? answers[responses[i].answer] : "-"%></td>
+			<td><%=responses[i].comment;%></td>
+		</tr>
+		<%}%>
+	</tbody>
+</table>
+<%}%>

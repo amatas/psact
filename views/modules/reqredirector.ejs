@@ -1,0 +1,25 @@
+<%if(!error){%>
+<script>
+<%if(survname){%>
+Cookies.set('survname', '<%=survname%>');
+Cookies.set('survpass', '<%=survpass%>');
+Cookies.set('access', '<%=access%>');
+<%}%>
+<%if('id'){%>
+Cookies.set('id', '<%=id%>');
+Cookies.set('pass', '<%=pass%>');
+<%}%>
+<%if(survname){%>
+window.location.replace('/survey');
+<%}else if(id){%>
+window.location.replace('/home');
+<%}%>
+</script>
+<p id="respond">
+	REQUEST LOCATED, PROCESSING...
+</p>
+<%}else{%>
+<p style="color:red">
+<%=error%>
+</p>
+<%}%>

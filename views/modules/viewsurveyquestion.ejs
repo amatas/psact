@@ -1,0 +1,71 @@
+<% var you = -1; %>
+<% var showtally = options.showtallyonview == "true"; %>
+<% var showresp = options.showresponview == "true"; %>
+<% var hascommented = false; %>
+<% for(var i = 0; i < responses.length; i++){ %>
+<% if(responses[i].name == username) { %>
+<% you = i; %>
+<% hascommented = true; %>
+<% } %>
+<% } %>
+<% if(showtally){ %>
+<% var tallies = []; %>
+<% for(var i = 0; i < answers.length; i++){ %>
+<% tallies.push(0); %>
+<% } %>
+<% for(var i = 0; i < responses.length; i++){ %>
+<% if(responses[i].answer >= 0){ %>
+<% tallies[responses[i].answer]++; %>
+<% } %>
+<% } %>
+<% } %>
+<table border="1" width="1000px">
+	<tbody>
+		<tr>
+			<%if(showtally){%>
+			<td colspan="2">
+			<%}else{%>
+			<td>
+			<%}%>
+				<%-description;%>
+			</td>
+		</tr>
+		<%for(var i = 0; i < answers.length; i++){%>
+		<%if(hascommented && responses[you].answer == i){%>
+		<tr style="background-color:lightblue; font-weight:bold">
+		<%}else{%>
+		<tr>
+		<%}%>
+			<td>
+				<input type="checkbox" disabled<%if(hascommented && responses[you].answer == i){%> checked<%}%>>
+				<%= answers[i]; %>
+			</td>
+			<%if(showtally){%>
+			<td width="100px"><%= tallies[i]; %> total</td>
+			<%}%>
+		</tr>
+		<%}%>
+	</tbody>
+</table>
+<%if(showresp){%>
+<table border="1" width="1000px">
+	<tbody>
+		<tr>
+			<th>Name</th>
+			<th>Selection</th>
+			<th>Comment</th>
+		</tr>
+		<%for(var i = 0; i < responses.length; i++){%>
+		<%if(i == you){%>
+		<tr style="background-color:lightblue; font-weight:bold">
+		<%}else{%>
+		<tr>
+		<%}%>
+			<td onclick="getBio('<%=responses[i].email;%>');"><%=responses[i].name;%></td>
+			<td><%= (responses[i].answer >= 0) ? answers[responses[i].answer] : "-"%></td>
+			<td><%=responses[i].comment;%></td>
+		</tr>
+		<%}%>
+	</tbody>
+</table>
+<%}%>
