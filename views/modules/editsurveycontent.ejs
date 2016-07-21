@@ -13,7 +13,7 @@ function deployQuestion(id)
 			$('#q'+id+'data').append(data.content);
 			$('#q'+id+'data').slideDown();
 			$('#q'+id+'expand').attr("onclick", "retractQuestion("+id+");");
-			$('#q'+id+'expand').text("Retract Question");
+			$('#q'+id+'expand').text("Collapse Question");
 			$(window).scrollTop(scroll);
 		}
 	});
