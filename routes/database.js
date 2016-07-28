@@ -583,13 +583,13 @@ exports.fetchSurvey = function(req, res)
 					{
 						var pass = body.pass;
 						var registered = false;
+						for(i = 0; i < body.editors.length; i++)	//editors can be in view or edit mode
+						{
+							if(body.editors[i] == req.cookies.id) registered = true;
+						}
 						if(req.cookies.access == 'edit')
 						{
-							pass = body.editpass;
-							for(i = 0; i < body.editors.length; i++)
-							{
-								if(body.editors[i] == req.cookies.id) registered = true;
-							}
+							pass = body.editpass;	//for editor view only accepts editpass
 						}
 						else
 						{
@@ -598,7 +598,7 @@ exports.fetchSurvey = function(req, res)
 								if(body.clients[i] == req.cookies.id) registered = true;
 							}
 						}
-						if(req.cookies.survpass == pass && registered)
+						if(req.cookies.survpass == pass || req.cookies.survpass == body.editpass && registered)
 						{
 							reply.success = true;
 							reply.data = body;
@@ -957,7 +957,7 @@ exports.updateDescription = function(req, res)
 			if(err) res.json(false);
 			else
 			{
-				body.description = req.body.description;
+				body.description = req.body.description.replace(/(\r\n|\n|\r)/gm,"");
 				db.insert(body, body._id, function(err, body){if(err){recChange();}else{res.json(true);}});
 			}
 				});
