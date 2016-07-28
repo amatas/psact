@@ -36,8 +36,15 @@ if(tinyMCE)
 	tinyMCE.init({ 
 		selector:'.MCE',
 		min_height:'500',
+		toolbar:'savemenu',
 		setup: function(editor)
 		{
+			editor.addButton('savemenu',{
+				text:'Save Description',
+				icon:false,
+				onclick:function(e){
+				saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());
+			}});
 			editor.on('blur', function(e) {
 				saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());
 			});
@@ -71,7 +78,6 @@ if(tinyMCE)
 				<input style="width:500px" type="text" id="q<%=id%>answer<%=i%>" value="<%= answers[i]; %>">
 				<button onclick="renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());">Rename Answer</button>
 				<button style="float:right" onclick="removeAnswer(<%=id%>, <%=i%>);">Remove Answer</button>
-				<button style="float:right" onclick="changeResponse(<%=id%>, <%=i%>, '<%=yourcomment%>', deployQuestion);">Select Answer</button>
 			</td>
 			<%if(showtally){%>
 			<td width="100px"><%= tallies[i]; %> total</td>
@@ -84,19 +90,6 @@ if(tinyMCE)
 			<button style="float:right" onclick="setAnswers(<%=id%>, ['Accept As-Is', 'Accept With the Following Changes', 'Reject For the Following Reasons']);">Accept/Change/Reject</button>
 			<button style="float:right" onclick="setAnswers(<%=id%>, ['Yes', 'No']);">Yes/No</button>
 			<span style="float:right">PRESETS:</span>
-			</td>
-		</tr>
-		<tr>
-			<%if(showtally){%>
-			<td colspan="2">
-			<%}else{%>
-			<td>
-			<%}%>
-				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write a comment on your answer."><%=yourcomment;%></textarea>
-				<br/>
-				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeAnswer(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), retractQuestion);} else {retractQuestion(<%=id%>)}">Submit</button>
-				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeAnswer(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), deployQuestion);}">Save</button>
-				<button style="float:right" onclick="removeResponse(<%=id%>, deployQuestion);">Remove Response</button>
 			</td>
 		</tr>
 	</tbody>

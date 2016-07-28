@@ -70,10 +70,11 @@ About Me:
 			<%ending = ' ended ';%>
 		<%}%>
 		<%=ending + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
-		
-		
-		
-		
+		<%if(now.getTime() < editor[i].exptime){%>
+			<button onclick="entertake('<%=editor[i].id%>','<%=editor[i].editpass%>')">answer</button>
+		<%}else{%>
+			<button onclick="enterview('<%=editor[i].id%>','<%=editor[i].editpass%>')">view</button>
+		<%}%>
 		<button onclick="enteredit('<%=editor[i].id%>', '<%=editor[i].editpass%>')">edit</button>
 		<br/>
 	<%}%>

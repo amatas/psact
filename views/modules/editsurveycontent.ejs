@@ -38,13 +38,18 @@ retractQuestion("<%=questions[i].id;%>");
 }
 </script>
 <p>
-SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
-<button onclick="showAll();">Show All</button>
-<button onclick="hideAll();">Hide All</button>
 <span style="float:right;">
 <button onclick="gohome();">Home</button>
 <button onclick="logout();">Log Out</button>
 </span>
+<br/>
+SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
+<button onclick="showAll();">Show All</button>
+<button onclick="hideAll();">Hide All</button>
+<br/>
+ID: <%=_id.substr(8)%>
+<br/>
+CLIENT PASS: <%=pass%>
 <br/>
 <%var d = new Date(exptime);%>
 <%=' Expires ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
@@ -89,3 +94,8 @@ SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblu
 <br/>
 	Show other responses on expired surveys: <input type="checkbox" id="optshowresponview" onclick="changeOptions();" <%if(options.showresponview){%>checked<%}%>>
 </p>
+<br/>
+<br/>
+<br/>
+
+<button onclick="gohome();">Finish Editing and Go Home</button>
