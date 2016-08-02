@@ -53,8 +53,7 @@ function placeRequest(data, callback)
 }
 
 //Mailer Setup
-var authdetails = require('../authentication.json');
-//console.log(authdetails.mailsmtp);
+var authdetails = require('../PSACTAuth.json');
 var mail = nodemailer.createTransport({
 	host: authdetails.mailsmtp,
 	secure: true,
@@ -73,7 +72,7 @@ mail.verify(function(error, success)
 function email(to, subject, text)
 {
 	mail.sendMail({
-		from: 'noreply@PSACT.com',
+		from: 'noreply@PSACT.gpii.net',
 		to: to,
 		subject: subject,
 		text: text
@@ -410,6 +409,7 @@ exports.userCheck = function(req, res)
 		{
 			if(body.pass == req.cookies.pass)
 			{
+				reply.name = body.name;
 				reply.status = true;
 			}
 		}
@@ -687,7 +687,7 @@ exports.changeResponse = function(req, res)
 		{
 			for(var i = 0; i < body.responses.length; i++)
 			{
-				if(body.responses[i].id == req.cookies.id)
+				if(body.responses[i].id === req.cookies.id)
 				{
 					body.responses.splice(i, 1);
 				}
