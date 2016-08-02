@@ -1,9 +1,10 @@
 var read = require('fs').readFileSync;
 var ejs = require('ejs');
 var nodemailer = require('nodemailer');
+var authdetails = require('../authentication.json');
 
 //Database Setup
-var nano = require('nano')('http://localhost:5984');
+var nano = require('nano')(authdetails.databaseurl);
 nano.db.list(function(err, body){
 	var dbPresent = false;
 	body.forEach(function(db){  //check to see if database exists
@@ -53,15 +54,25 @@ function placeRequest(data, callback)
 }
 
 //Mailer Setup
-var authdetails = require('../PSACTAuth.json');
-var mail = nodemailer.createTransport({
-	host: authdetails.mailsmtp,
-	secure: true,
-	auth: {
-		user: authdetails.mailuser,
-		pass: authdetails.mailpass
-	}
-});
+var mailoptions = {};
+if (!authdetails.mailuser || 0 === authdetails.mailuser.length)
+{
+    mailoptions = {
+        host: authdetails.mailsmtp,
+        secure: true,
+        auth: {
+            user: authdetails.mailuser,
+            pass: authdetails.mailpass
+        }
+    }
+}
+else
+{
+    mailoptions = {
+        host: authdetails.mailsmtp
+    } 
+}
+var mail = nodemailer.createTransport(mailoptions);
 mail.verify(function(error, success)
 		{
 	if(error)
