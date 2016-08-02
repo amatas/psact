@@ -38,12 +38,13 @@ retractQuestion("<%=questions[i].id;%>");
 }
 </script>
 <p>
-<span style="float:right;">
-<button onclick="gohome();">Home</button>
-<button onclick="logout();">Log Out</button>
-</span>
-<br/>
-SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
+	<button onclick="gohome();">Home</button>
+	<span style="float:right;">
+		<button onclick="logout();">Log Out</button>
+	</span>
+	<br/>
+	<br/>
+	SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
 <button onclick="showAll();">Show All</button>
 <button onclick="hideAll();">Hide All</button>
 <br/>
@@ -51,8 +52,10 @@ ID: <%=_id.substr(8)%>
 <br/>
 CLIENT PASS: <%=pass%>
 <br/>
+EDITOR PASS: <%=editpass%>
+<br/>
 <%var d = new Date(exptime);%>
-<%=' Expires ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+<%=' Expires ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
 </p>
 <%for(var i = 0; i < questions.length; i++){%>
 <div id="<%=questions[i].id;%>" class="qid"></div>
@@ -60,8 +63,9 @@ CLIENT PASS: <%=pass%>
 	<table border="1" width="1000px">
 		<tr>
 			<td id="q<%= questions[i].id; %>title">
+				Short Title for Question 
 				<%= i + 1; %>: <input id="q<%=questions[i].id;%>titlefield" type="text" style="width: 500px" value="<%= questions[i].title; %>" onBlur="changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');" onkeypress="onEnter(event, function(){changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');})">
-				<button onclick="changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');">Change Title</button>
+				<!--button onclick="changeQTitle(<%=questions[i].id;%>, '<%=questions[i].title%>');">Change Title</button-->
 				<button style="float:right;" onclick="removeQuestion(<%=questions[i].id;%>);">Remove Question</button>
 				<button id="q<%=questions[i].id%>expand" style="float:right;" onclick="deployQuestion(<%=questions[i].id;%>);">Expand Question</button>
 			</td>

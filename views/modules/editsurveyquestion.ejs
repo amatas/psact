@@ -36,15 +36,8 @@ if(tinyMCE)
 	tinyMCE.init({ 
 		selector:'.MCE',
 		min_height:'500',
-		toolbar:'savemenu',
 		setup: function(editor)
 		{
-			editor.addButton('savemenu',{
-				text:'Save Description',
-				icon:false,
-				onclick:function(e){
-				saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());
-			}});
 			editor.on('blur', function(e) {
 				saveDescription(<%=id%>, tinyMCE.get('q<%=id%>description').getContent());
 			});
@@ -75,8 +68,8 @@ if(tinyMCE)
 		<%}%>
 			<td>
 				<input type="checkbox"<%if(youranswer == i){%> checked<%}%>>
-				<input style="width:500px" type="text" id="q<%=id%>answer<%=i%>" value="<%= answers[i]; %>">
-				<button onclick="renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());">Rename Answer</button>
+				<input style="width:500px" type="text" id="q<%=id%>answer<%=i%>" value="<%= answers[i]; %>" onblur="renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());" onkeypress="onEnter(event, function(){renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());});">
+				<!--button onclick="renameAnswer(<%=id%>, <%=i%>, $('#q<%=id%>answer<%=i%>').val());">Rename Answer</button-->
 				<button style="float:right" onclick="removeAnswer(<%=id%>, <%=i%>);">Remove Answer</button>
 			</td>
 			<%if(showtally){%>
@@ -110,7 +103,7 @@ if(tinyMCE)
 		<%}%>
 			<td onclick="getBio('<%=responses[i].email;%>');"><%=responses[i].name;%></td>
 			<td><%= (responses[i].answer >= 0) ? answers[responses[i].answer] : "-"%></td>
-			<td><%=responses[i].comment;%></td>
+			<td style="white-space:pre-wrap"><%=responses[i].comment;%></td>
 		</tr>
 		<%}%>
 	</tbody>

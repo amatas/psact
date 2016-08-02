@@ -21,6 +21,10 @@ function login()
 		{
 			if(data.status == true)
 			{
+				if($('#loginrememberme').prop('checked'))
+					Cookies.set('name', data.name, 24);
+				else
+					Cookies.set('name', data.name);
 				window.location.replace('/home');
 			}
 			else

@@ -32,16 +32,18 @@ retractQuestion("<%=questions[i].id;%>");
 }
 </script>
 <p>
-SURVEY TITLE: <%= title; %>
-<button onclick="showAll();">Show All</button>
-<button onclick="hideAll();">Hide All</button>
-<span style="float:right;">
-<button onclick="gohome();">Home</button>
-<button onclick="logout();">Log Out</button>
-</span>
-<br/>
+	<button onclick="gohome();">Home</button>
+	<span style="float:right;">
+	<button onclick="logout();">Log Out</button>
+	</span>
+	<br/>
+	<br/>
+	SURVEY TITLE: <%= title; %>
+	<button onclick="showAll();">Show All</button>
+	<button onclick="hideAll();">Hide All</button>
+	<br/>
 <%var d = new Date(exptime);%>
-<%=' Expired ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+<%=' Expired ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
 </p>
 <%for(var i = 0; i < questions.length; i++){%>
 <div id="<%=questions[i].id;%>" class="qid"></div>

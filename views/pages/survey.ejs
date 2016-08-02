@@ -1,3 +1,4 @@
+
 <% include ../modules/head %>
 <script>
 var questions = [];
@@ -150,14 +151,17 @@ function removeAnswer(id, i)
 }
 function renameAnswer(id, i, name)
 {
-	questions[id].answers[i] = name;
-	$.post('/updateanswers', {id: id, answers: questions[id].answers}, function(data)
+	if(questions[id].answers[i] != name)
 	{
-		if(data)
+		questions[id].answers[i] = name;
+		$.post('/updateanswers', {id: id, answers: questions[id].answers}, function(data)
 		{
-			deployQuestion(id);
-		}
-	});
+			if(data)
+			{
+				deployQuestion(id);
+			}
+		});
+	}
 }
 function setAnswers(id, answers)
 {
