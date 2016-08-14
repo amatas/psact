@@ -55,10 +55,10 @@
 			<%}else{%>
 			<td>
 			<%}%>
-				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write a comment on your answer."><%=yourcomment;%></textarea>
+				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write a comment here"><%=yourcomment;%></textarea>
 				<br/>
-				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), retractQuestion);} else {retractQuestion(<%=id%>)}">Submit</button>
-				<button style="float:right" onclick="if($('#q<%= id; %>comment').val() != '<%=yourcomment%>') {changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), deployQuestion);}">Save</button>
+				<button style="float:right" onclick="changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), retractQuestion);">Submit</button>
+				<button style="float:right" onclick="changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), deployQuestion);">Save</button>
 			</td>
 		</tr>
 	</tbody>
@@ -79,7 +79,7 @@
 		<%}%>
 			<td onclick="getBio('<%=responses[i].email;%>');"><%=responses[i].name;%></td>
 			<td><%= (responses[i].answer >= 0) ? answers[responses[i].answer] : "-"%></td>
-			<td><%=responses[i].comment;%></td>
+			<td style="white-space:pre-wrap"><%=responses[i].comment;%></td>
 		</tr>
 		<%}%>
 	</tbody>

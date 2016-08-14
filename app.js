@@ -34,6 +34,7 @@ if ('development' == app.get('env')) {
 ///////////////////////////////////////////////
 
 //script provision
+app.get('/css', function(req, res){res.sendfile('./public/stylesheets/psact.css');});
 app.get('/script/ejs', function(req, res){res.sendfile('./node_modules/ejs/ejs.js');});
 app.get('/script/jquery', function(req, res){res.sendfile('./public/javascript/jquery_min.js');});
 app.get('/script/utility', function(req, res){res.sendfile('./public/javascript/PSACTutility.js');});
@@ -47,7 +48,7 @@ app.get('/survey', index.survey);
 app.get('/acctrequest', database.acctRequest);
 app.post('/processrequest', database.processRequest);
 
-//loading parts with database
+//general database operations
 app.post('/registeruser', database.registerUser);
 app.post('/usercheck', database.userCheck);
 app.post('/fetchhomepage', database.fetchHomepage);
@@ -68,6 +69,7 @@ app.post('/changeqtitle', database.changeQTitle);
 app.post('/updatedescription', database.updateDescription);
 app.post('/updateanswers', database.updateAnswers);
 app.post('/updateoptions', database.updateOptions);
+app.post('/sendinvites', database.sendInvites);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

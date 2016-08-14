@@ -1,0 +1,8 @@
+{
+	"URL": "http://psact.raisingthefloor.org",
+	"databaseurl": "http://localhost:5984",
+	"mailsmtp": "insert smtp here",
+	"mailuser": "insert actual email here",
+	"mailpass": "insert password here",
+	"fromaddress": "noreply@PSACT.gpii.net"
+}

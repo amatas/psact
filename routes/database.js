@@ -1,9 +1,10 @@
 var read = require('fs').readFileSync;
 var ejs = require('ejs');
 var nodemailer = require('nodemailer');
+var authdetails = require('../PSACTAuth.json');
 
 //Database Setup
-var nano = require('nano')('http://localhost:5984');
+var nano = require('nano')(authdetails.databaseurl);
 nano.db.list(function(err, body){
 	var dbPresent = false;
 	body.forEach(function(db){  //check to see if database exists
@@ -53,16 +54,26 @@ function placeRequest(data, callback)
 }
 
 //Mailer Setup
-var authdetails = require('../authentication.json');
-//console.log(authdetails.mailsmtp);
-var mail = nodemailer.createTransport({
-	host: authdetails.mailsmtp,
-	secure: true,
-	auth: {
-		user: authdetails.mailuser,
-		pass: authdetails.mailpass
+var mailOptions = {};
+if(!authdetails.mailuser || 0 === authdetails.mailuser.length)
+{
+	mailOptions =
+	{
+		host: authdetails.mailsmtp,
+		secure: true,
+		auth: {
+			user: authdetails.mailuser,
+			pass: authdetails.mailpass
+		}
 	}
-});
+}
+else
+{
+	mailOptions = {
+		host: authdetails.mailsmtp
+	}
+}
+var mail = nodemailer.createTransport(mailOptions);
 mail.verify(function(error, success)
 		{
 	if(error)
@@ -73,22 +84,19 @@ mail.verify(function(error, success)
 function email(to, subject, text)
 {
 	mail.sendMail({
-		from: 'noreply@PSACT.com',
+		from: authdetails.fromaddress,
 		to: to,
 		subject: subject,
 		text: text
 	});
 }
-
 //REQUEST FUNCTIONS//
 
 function reqRegisterClienttoSurvey(uid, sid, spass, callback)
 {
-	var reply = {status: false, error: ''};
 	var recRegClientInSurvey = function(uid, sid)
 	{
-		db.get('SURVEY##' + sid, function(err, body)
-				{
+		db.get('SURVEY##' + sid, function(err, body) {
 			if(err)
 			{
 				recRegClientInSurvey(uid, sid);
@@ -96,35 +104,31 @@ function reqRegisterClienttoSurvey(uid, sid, spass, callback)
 			else
 			{
 				body.clients.push(uid);
-				db.insert(body, 'SURVEY##' + sid, function(err)
-						{
+				db.insert(body, 'SURVEY##' + sid, function(err) {
 					if(err)
 					{
 						recRegClientInSurvey(uid, sid);
 					}
 					else
 					{
-						reply.status = true;
-						callback(reply);
+						var now = new Date()
+						callback(null, body.exptime > now.getTime());
 					}
-						});
-			}
 				});
+			}
+		});
 	};
 	var recRegClientInUser = function(uid, sid, stitle, pass, exptime)
 	{
-		db.get('USER##' + uid, function(err, body)
-				{
+		db.get('USER##' + uid, function(err, body) {
 			if(err)
 			{
-				reply.error = 'User file not found';
-				callback(reply);
+				callback("ERROR: User file not found", null);
 			}
 			else
 			{
 				body.client.push({id: sid, title: stitle, pass: pass, exptime: exptime});
-				db.insert(body, 'USER##' + uid, function(err)
-						{
+				db.insert(body, 'USER##' + uid, function(err) {
 					if(err)
 					{
 						recRegClientInUser(uid, sid, stitle, pass, exptime);
@@ -133,21 +137,18 @@ function reqRegisterClienttoSurvey(uid, sid, spass, callback)
 					{
 						recRegClientInSurvey(uid, sid);
 					}
-						});
-			}
 				});
+			}
+		});
 	};
-	db.get('SURVEY##' + sid, function(err, body)
-			{
+	db.get('SURVEY##' + sid, function(err, body) {
 		if(err)
 		{
-			reply.error = 'Survey does not exist in database';
-			callback(reply);
+			callback("ERROR: Survey does not exist in database");
 		}
 		else if(body.pass != spass)
 		{
-			reply.error = 'Invalid password';
-			callback(reply);
+			callback("ERROR: Invalid password");
 		}
 		else
 		{
@@ -159,24 +160,21 @@ function reqRegisterClienttoSurvey(uid, sid, spass, callback)
 			}
 			if(alreadythere)
 			{
-				reply.error = 'Already registered in survey';
-				callback(reply);
+				callback("ERROR: Already registered in survey");
 			}
 			else
 			{
 				recRegClientInUser(uid, sid, stitle, spass, parseInt(body.exptime));
 			}
 		}
-			});
+	});
 }
 
 function reqRegisterEditortoSurvey(uid, sid, editpass, callback)
 {
-	var reply = {status: false, error: ''};
 	var recRegEditInSurvey = function(uid, sid)
 	{
-		db.get('SURVEY##' + sid, function(err, body)
-				{
+		db.get('SURVEY##' + sid, function(err, body) {
 			if(err)
 			{
 				recRegEditInSurvey(uid, sid);
@@ -184,28 +182,25 @@ function reqRegisterEditortoSurvey(uid, sid, editpass, callback)
 			else
 			{
 				body.editors.push(uid);
-				db.insert(body, 'SURVEY##' + sid, function(err)
-						{
+				db.insert(body, 'SURVEY##' + sid, function(err) {
 					if(err)
 					{
 						recRegEditInSurvey(uid, sid);
 					}
 					else
 					{
-						reply.status = true;
-						callback(reply);
+						callback(null);
 					}
-						});
-			}
 				});
+			}
+		});
 	};
 	var recRegEditInUser = function(uid, sid, stitle, editpass, exptime)
 	{
 		db.get('USER##' + uid, function(err, body) {
 			if(err)
 			{
-				reply.error = 'User file not found';
-				callback(reply);
+				callback("ERROR: user file not found");
 			}
 			else
 			{
@@ -226,13 +221,11 @@ function reqRegisterEditortoSurvey(uid, sid, editpass, callback)
 	db.get('SURVEY##' + sid, function(err, body) {
 		if(err)
 		{
-			reply.error = 'Survey does not exist in database';
-			callback(reply);
+			callback("ERROR: Survey does not exist in database");
 		}
 		else if(body.editpass != editpass)
 		{
-			reply.error = 'Invalid editor password';
-			callback(reply);
+			callback("ERROR: Invalid editor password");
 		}
 		else
 		{
@@ -243,8 +236,7 @@ function reqRegisterEditortoSurvey(uid, sid, editpass, callback)
 			}
 			if(alreadythere)
 			{
-				reply.error = 'Already registered as editor';
-				callback(reply);
+				callback("ERROR: Already registered as editor");
 			}
 			else
 			{
@@ -301,6 +293,89 @@ exports.processRequest = function(req, res)
 			}
 		});
 	}
+	function requestRegister(body, requests)
+	{
+		if(requests[req.body.num].register)
+		{
+			var r = requests[req.body.num].register;
+			if(r.editor)
+			{
+				reqRegisterEditortoSurvey(r.uid, r.sid, r.spass, function(err) {
+					if(err)
+					{
+						body.error = err;
+						recRemoveRequest(req.body.num, function(){
+							res.json({success: true, content: compileModule('reqredirector', body)});
+						});
+					}
+					else
+					{
+						body.survname = r.sid;
+						body.survpass = r.spass;
+						body.access = 'edit';
+						recRemoveRequest(req.body.num, function(){
+							res.json({success: true, content: compileModule('reqredirector', body)});
+						});
+					}
+				});
+			}
+			else
+			{
+				reqRegisterClienttoSurvey(r.uid, r.sid, r.spass, function(err, isExpired) {
+					if(err)
+					{
+						body.error = err;
+						recRemoveRequest(req.body.num, function(){
+							res.json({success: true, content: compileModule('reqredirector', body)});
+						});
+					}
+					else
+					{
+						body.survname = r.sid;
+						body.survpass = r.spass;
+						body.access = 'take';
+						if(isExpired) body.access = 'view';
+						recRemoveRequest(req.body.num, function(){
+							res.json({success: true, content: compileModule('reqredirector', body)});
+						});
+					}
+				});
+			}
+		}
+		else
+		{
+			recRemoveRequest(req.body.num, function(){
+				res.json({success: true, content: compileModule('reqredirector', body)});
+			});
+		}
+	}
+	function requestActivate(body, requests)
+	{
+		if(requests[req.body.num].activate)
+		{
+			var a = requests[req.body.num].activate;
+			reqActivateUser(a.id, a.name, a.pass, function(err){
+				if(err)
+				{
+					body.error = err;
+					recRemoveRequest(req.body.num, function(){
+						res.json({success: true, content: compileModule('reqredirector', body)});
+					});
+				}
+				else
+				{
+					body.id = a.id;
+					body.name = a.name;
+					body.pass = a.pass;
+					requestRegister(body, requests)
+				}
+			});
+		}
+		else
+		{
+			requestRegister(body, requests)
+		}
+	}
 	body = {
 		error: null,
 		id: null,
@@ -320,45 +395,7 @@ exports.processRequest = function(req, res)
 		{
 			if(requests[req.body.num])
 			{
-				if(requests[req.body.num].activate)
-				{
-					var a = requests[req.body.num].activate;
-					reqActivateUser(a.id, a.name, a.pass, function(err){
-						if(err)
-						{
-							body.error = err;
-							recRemoveRequest(req.body.num, function(){
-								res.json({success: true, content: compileModule('reqredirector', body)});
-							});
-						}
-						else
-						{
-							body.id = a.id;
-							body.name = a.name;
-							body.pass = a.pass;
-							if(requests[req.body.num].registerUser)
-							{
-								//TODO: REGISTER USER CODE
-							}
-							else if(requests[req.body.num].registerEditor)
-							{
-								//TODO: REGISTER EDITOR CODE
-							}
-							else
-							{
-								recRemoveRequest(req.body.num, function(){
-									res.json({success: true, content: compileModule('reqredirector', body)});
-								});
-							}
-						}
-					});
-				}
-				else
-				{
-					recRemoveRequest(req.body.num, function(){
-						res.json({success: true, content: compileModule('reqredirector', body)});
-					});
-				}
+				requestActivate(body, requests);
 			}
 			else
 			{
@@ -410,6 +447,7 @@ exports.userCheck = function(req, res)
 		{
 			if(body.pass == req.cookies.pass)
 			{
+				reply.name = body.name;
 				reply.status = true;
 			}
 		}
@@ -490,12 +528,12 @@ exports.createSurvey = function(req, res)
 
 exports.registerClienttoSurvey = function(req, res)
 {
-	reqRegisterClienttoSurvey(req.cookies.id, req.body.name, req.body.pass, function(data){res.json(data);});
+	reqRegisterClienttoSurvey(req.cookies.id, req.body.name, req.body.pass, function(err){res.json({status:!err,error:err});});
 };
 
 exports.registerEditortoSurvey = function(req, res)
 {
-	reqRegisterEditortoSurvey(req.cookies.id, req.body.name, req.body.editpass, function(data){res.json(data);});
+	reqRegisterEditortoSurvey(req.cookies.id, req.body.name, req.body.editpass, function(err){res.json({status:!err,error:err});});
 };
 
 exports.changeName = function(req, res)
@@ -687,7 +725,7 @@ exports.changeResponse = function(req, res)
 		{
 			for(var i = 0; i < body.responses.length; i++)
 			{
-				if(body.responses[i].id == req.cookies.id)
+				if(body.responses[i].id === req.cookies.id)
 				{
 					body.responses.splice(i, 1);
 				}
@@ -1002,3 +1040,90 @@ exports.updateOptions = function(req, res)
 	}
 	recChange();
 };
+
+exports.sendInvites = function(req, res)
+{
+	var emails = req.body.emails.split(",");
+	if(req.body.emails == ""){res.json("Please enter one or more email addresses separated by commas.");}
+	var wrapup = function()
+	{
+		//email(req.cookies.id, "PSACT Invite Sent Confirmation", 'Hello ' + user.name + '! This email is to confirm that you sent an invite to meeting ' +);
+		
+		
+		
+		res.json("Action successful, subscription emails have been sent.");
+	}
+	var sendEmails = function(body, tosend)
+	{
+		if(tosend.length == 0)
+		{
+			wrapup();
+		}
+		else
+		{
+			var mail = tosend.pop();
+			db.get('USER##' + mail, function(err, user){
+				if(err)
+				{
+					var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+			        var string_length = 6;
+			        var randomstring = '';
+			        for (var i=0; i<string_length; i++) {
+			            var rnum = Math.floor(Math.random() * chars.length);
+			            randomstring += chars.substring(rnum,rnum+1);
+			        }
+					placeRequest({
+						activate: {
+							id: mail,
+							name: "PSACT User",
+							pass: randomstring,
+						},
+						register: {
+							client: 1,
+							uid: mail,
+							sid: body._id.substr(8),
+							spass: body.pass
+						}
+					}, function(num){
+						email(mail, "PSACT Activation & Survey Invitation", 'Hello, and welcome to PSACT! You have been invited to take part in a survey using the PSACT service.\nTo activate your account, follow this link:\n' + authdetails.URL + '/acctrequest?num=' + num + '\nYour password is: ' + randomstring + '');
+						sendEmails(body, tosend);
+						console.log(authdetails.URL + '/acctrequest?num=' + num);
+					});
+				}
+				else
+				{
+					placeRequest({
+						register: {
+							client: 1,
+							uid: mail,
+							sid: body._id.substr(8),
+							spass: body.pass
+						}
+					}, function(num){
+						email(mail, "PSACT Survey Invitation", 'Hello ' + user.name + '! You have been invited to take part in a survey using the PSACT service.\nTo accept the invitation, follow this link:\n' + authdetails.URL + '/acctrequest?num=' + num + '\n');
+						sendEmails(body, tosend);
+						console.log(authdetails.URL + '/acctrequest?num=' + num);
+					});
+				}
+			});
+		}
+	}
+	var valid = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+	for(var i = 0; i < emails.length; i++)
+	{
+		emails[i] = emails[i].trim();
+		if(!valid.test(emails[i]))
+		{
+			res.json("Invalid input. Input must consist of one or more email addresses separated by commas.");
+			return;
+		}
+	}
+	var tosend = emails;
+	db.get('SURVEY##' + req.cookies.survname, function(err, body){
+		if(err) {res.json("There was an error communicating with the server.")}
+		else
+		{
+			sendEmails(body, tosend);
+		}
+	});
+}
