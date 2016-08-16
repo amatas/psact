@@ -55,7 +55,7 @@ function placeRequest(data, callback)
 
 //Mailer Setup
 var mailOptions = {};
-if(!authdetails.mailuser || 0 === authdetails.mailuser.length)
+if(authdetails.mailuser && 0 !== authdetails.mailuser.length)
 {
 	mailOptions =
 	{
@@ -1075,7 +1075,7 @@ exports.sendInvites = function(req, res)
 					placeRequest({
 						activate: {
 							id: mail,
-							name: "PSACT User",
+							name: mail.split("@")[0],
 							pass: randomstring,
 						},
 						register: {

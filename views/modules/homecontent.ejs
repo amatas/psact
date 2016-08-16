@@ -4,7 +4,9 @@
 <p>
 <div id="namestatic">
 Welcome back, <%= name; %>.
-<button onclick="logout()">Log out</button>
+<span style="float:right;">
+	<button onclick="logout();">Log Out</button>
+</span>
 </div>
 <div id="nameedit" style="display:none">
 <input type="text" id="editnametext" onkeypress="onEnter(event, changename);" value="<%= name %>">
@@ -31,8 +33,6 @@ About Me:
 <button onclick="editbio();">Submit</button>
 <button onclick="closeeditbio();">Cancel</button>
 </div>
-<br/>
-<br/>
 <%var now = new Date();%>
 <%var clientexp = false;%>
 <%if(client.length > 0){%>
@@ -41,55 +41,16 @@ About Me:
 		<%if(now.getTime() < client[i].exptime){%>
 			<%if(cliststart){%>
 				<%cliststart = false;%>
-				Active Surveys:
-				<br/>
+				<hr>
+				<h4>Active Surveys:</h4>
 			<%}%>
+			<button onclick="entertake('<%=client[i].id%>', '<%=client[i].pass%>')">answer</button>
 			<%=client[i].title%>
 			<%d = new Date(client[i].exptime);%>
 			<%=' ends ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
-			<button onclick="entertake('<%=client[i].id%>', '<%=client[i].pass%>')">answer</button>
 			<br/>
 		<%}else{%>
 			<%clientexp = true;%>
-		<%}%>
-	<%}%>
-	<%if(!cliststart){%>
-		<br/>
-	<%}%>
-<%}%>
-<%if(editor.length > 0){%>
-	Editable Surveys:
-	<br/>
-	<%for(var i = 0; i < editor.length; i++){%>	
-		<%=editor[i].title%>
-		<%d = new Date(editor[i].exptime);%>
-		<%var ending = ' ';%>
-		<%if(now.getTime() < editor[i].exptime){%>
-			<%ending = ' ends ';%>
-		<%}else{%>
-			<%ending = ' ended ';%>
-		<%}%>
-		<%=ending + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
-		<%if(now.getTime() < editor[i].exptime){%>
-			<button onclick="entertake('<%=editor[i].id%>','<%=editor[i].editpass%>')">answer</button>
-		<%}else{%>
-			<button onclick="enterview('<%=editor[i].id%>','<%=editor[i].editpass%>')">view</button>
-		<%}%>
-		<button onclick="enteredit('<%=editor[i].id%>', '<%=editor[i].editpass%>')">edit</button>
-		<br/>
-	<%}%>
-	<br/>
-<%}%>
-<%if(clientexp == true){%>
-	Expired Surveys:
-	<br/>
-	<%for(var i = 0; i < client.length; i++){%>
-		<%if(now.getTime() >= client[i].exptime){%>
-			<%=client[i].title%>
-			<%d = new Date(client[i].exptime);%>
-			<%=' ended ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
-			<button onclick="enterview('<%=client[i].id%>', '<%=client[i].pass%>')">view</button>
-			<br/>
 		<%}%>
 	<%}%>
 	<br/>
@@ -118,6 +79,29 @@ Register to an Existing Survey:
 <button onclick="collapseregistersurvey()">Cancel</button>
 </div>
 </div>
+<%if(editor.length > 0){%>
+	<hr>
+	<h4>Editable Surveys:</h4>
+	<%for(var i = 0; i < editor.length; i++){%>	
+		<button onclick="enteredit('<%=editor[i].id%>', '<%=editor[i].editpass%>')">edit</button>
+		<%if(now.getTime() < editor[i].exptime){%>
+			<button onclick="entertake('<%=editor[i].id%>','<%=editor[i].editpass%>')">answer</button>
+		<%}else{%>
+			<button onclick="enterview('<%=editor[i].id%>','<%=editor[i].editpass%>')">view</button>
+		<%}%>
+		<%=editor[i].title%>
+		<%d = new Date(editor[i].exptime);%>
+		<%var ending = ' ';%>
+		<%if(now.getTime() < editor[i].exptime){%>
+			<%ending = ' ends ';%>
+		<%}else{%>
+			<%ending = ' ended ';%>
+		<%}%>
+		<%=ending + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+		<br/>
+	<%}%>
+	<br/>
+<%}%>
 <!--SURVEY CREATION FORM-->
 <div id="collapsedcreatesurvey">
 <button onclick="expandcreatesurvey()">Create a new survey</button>
@@ -150,3 +134,18 @@ Expires on:
 <button onclick="createsurvey()">Create</button>
 <button onclick="collapsecreatesurvey()">Cancel</button>
 </div>
+<br/>
+<%if(clientexp == true){%>
+	<hr>
+	<h4>Expired Surveys:</h4>
+	<%for(var i = 0; i < client.length; i++){%>
+		<%if(now.getTime() >= client[i].exptime){%>
+			<button onclick="enterview('<%=client[i].id%>', '<%=client[i].pass%>')">view</button>
+			<%=client[i].title%>
+			<%d = new Date(client[i].exptime);%>
+			<%=' ended ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+			<br/>
+		<%}%>
+	<%}%>
+	<br/>
+<%}%>

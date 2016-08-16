@@ -72,6 +72,7 @@ if(Cookies.get('id')!=''&&Cookies.get('pass')!='') window.location.replace('/hom
 <input id="loginpass" type="password" placeholder="Password" onkeypress="onEnter(event, login);"></input><br/>
 <input id="loginrememberme" type="checkbox">Remember me</input><br/>
 <button onclick="login()">Login</button>
+<br/>
 <button onclick="swaptocreate()">Create new account</button>
 </div>
 <div id="CREATE" style="display:none">
@@ -79,6 +80,7 @@ if(Cookies.get('id')!=''&&Cookies.get('pass')!='') window.location.replace('/hom
 <input id="createid" type="text" placeholder="Email" onkeypress="onEnter(event, create);"></input><br/>
 <input id="createname" type="text" placeholder="Name/Handle" onkeypress="onEnter(event, create);"></input><br/>
 <button onclick="create()">Create account</button>
+<br/>
 <button onclick="swaptologin()">Return to login</button>
 </div>
 
