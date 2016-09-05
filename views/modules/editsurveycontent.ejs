@@ -40,6 +40,10 @@ function sendInvites()
 {
 	$.post('/sendinvites', {emails: $('#invitebox').val()}, function(message){alert(message);});
 }
+function getInviteLink()
+{
+	$.post('/getinvitelink', {name: "<%=_id%>"}, function(data){$('#invitelink').html(data);});
+}
 </script>
 <p>
 	<button onclick="gohome();">Home</button>
@@ -102,11 +106,14 @@ EDITOR PASS: <%=editpass%>
 <br/>
 	Show other responses on expired surveys: <input type="checkbox" id="optshowresponview" onclick="changeOptions();" <%if(options.showresponview){%>checked<%}%>>
 </p>
-Invite people to this survey (comma-separated list of emails):
+Invite specific people to this survey (comma-separated list of emails):
 <br/>
 <input type="text" style="width:300px" id="invitebox"></input>
 <button onclick="sendInvites()">Send Invites</button>
 <br/>
+<div id="invitelink">
+	<button onclick="getInviteLink()">Or click here to get a persistent invite link</button>
+</div>
 <br/>
 <br/>
 

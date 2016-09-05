@@ -2,6 +2,8 @@ var read = require('fs').readFileSync;
 var ejs = require('ejs');
 var nodemailer = require('nodemailer');
 var authdetails = require('../PSACTAuth.json');
+var tea = require('./blockTEA.js');
+var teapass = 'thisisthePSACTcipherkeyhere';
 
 //Database Setup
 var nano = require('nano')(authdetails.databaseurl);
@@ -112,7 +114,7 @@ function reqRegisterClienttoSurvey(uid, sid, spass, callback)
 					else
 					{
 						var now = new Date()
-						callback(null, body.exptime > now.getTime());
+						callback(null, body.exptime <= now.getTime());
 					}
 				});
 			}
@@ -1126,4 +1128,78 @@ exports.sendInvites = function(req, res)
 			sendEmails(body, tosend);
 		}
 	});
-}
+};
+
+exports.getInviteLink = function(req, res)
+{
+	res.json(authdetails.URL+"/invite?id="+tea.encrypt(req.body.name, teapass));
+};
+
+exports.useInviteLink = function(req, res)
+{
+	console.log(req.query.id);
+	var name = tea.decrypt(req.query.id, teapass);
+	console.log(name);
+	db.get(name, function(err, data){
+		if(!err) res.render('pages/login', {invitation: true, survname: name.substring(8), survpass: data.pass});
+	});
+	
+	
+	/*Game Plan:
+	 * routes to special login page, or tweaks existing login with EJS tricks
+	 * login creates request, then immediately redirects to that request
+	 * single-channel registration works
+	 */
+};
+
+exports.answerInvite = function(req, res)
+{
+	var username;
+	console.log(req.body.uid);
+	db.get('USER##'+req.body.uid, function(err, body){
+		if(err)
+		{
+			if(!req.body.isNew) res.json({err:"Invalid login"});
+			username = req.body.uname;
+		}
+		else
+		{
+			if(req.body.isNew) res.json({err:"Email already registered"});
+			if(body.pass !== req.body.upass) res.json({err:"Invalid login"});
+			username = body.name;
+		}
+		db.get('SURVEY##'+req.body.sname, function(err, body){
+			if(err)
+			{
+				res.json({err:"Survey not found"});
+			}
+			else
+			{
+				var alreadythere = false;
+				for(var i = 0; i < body.editors.length; i++)
+				{
+					if(req.body.uid == body.editors[i]) alreadythere = true;
+				}
+				for(var i = 0; i < body.clients.length; i++)
+				{
+					if(req.body.uid == body.clients[i]) alreadythere = true;
+				}
+				if(alreadythere)
+				{
+					res.json({err:"Already registered to survey"});
+				}
+				else
+				{
+					placeRequest(req.body.data, function(num){
+						if(req.body.isNew)
+						{
+							email(req.body.uid, "Your PSACT Password", 'Hello, '+req.body.uname+', and welcome to PSACT! To log back into this account, you will need to enter the credentials:\nUsername: '+req.body.uid+'\nPassword: '+req.body.upass);
+						}
+						console.log(authdetails.URL + '/acctrequest?num=' + num);
+						res.json({num:num, name:username});
+					});
+				}
+			}
+		});
+	});
+};

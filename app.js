@@ -43,6 +43,7 @@ app.get('/script/utility', function(req, res){res.sendfile('./public/javascript/
 app.get('/', index.login);
 app.get('/home', index.home);
 app.get('/survey', index.survey);
+app.get('/invite', database.useInviteLink);
 
 //request processing
 app.get('/acctrequest', database.acctRequest);
@@ -70,6 +71,8 @@ app.post('/updatedescription', database.updateDescription);
 app.post('/updateanswers', database.updateAnswers);
 app.post('/updateoptions', database.updateOptions);
 app.post('/sendinvites', database.sendInvites);
+app.post('/getinvitelink', database.getInviteLink);
+app.post('/answerinvite', database.answerInvite);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

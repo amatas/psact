@@ -16,7 +16,7 @@ function login()
 			Cookies.set('id', $('#loginname').val());
 			Cookies.set('pass', $('#loginpass').val());
 		}
-		
+<% if(!locals.invitation) { %>
 		$.post('/usercheck', {}, function(data)
 		{
 			if(data.status == true)
@@ -32,25 +32,91 @@ function login()
 				alert('Invalid login');
 			}
 		});
+<% } else { %>
+		$.post('/answerinvite', {
+			data: {
+				register: {
+					client: 1,
+					uid: $('#loginname').val(),
+					sid: "<%=locals.survname%>",
+					spass: "<%=locals.survpass%>"
+				}
+			},
+			uid: $('#loginname').val(),
+			upass: $('#loginpass').val(),
+			sname: "<%=locals.survname%>"
+		}, function(data)
+		{
+			if(data.err)
+			{
+				alert(data.err);
+			}
+			else
+			{
+				if($('#loginrememberme').prop('checked')) Cookies.set('name', data.name, 24);
+				else Cookies.set('name', data.name);
+				window.location.replace('/acctrequest?num='+data.num);
+			}
+		});
+<% } %>
 	}
 };
 function create()
 {
 	if($('#createname').val() == '') alert('Please enter a username');
-	//else if($('#createpass').val() == '') alert('Please enter a password');
 	else
 	{
 		Cookies.set('id', $('#createid').val());
 		Cookies.set('name', $('#createname').val());
+<% if(!locals.invitation) { %>
 		$.post('/registeruser', {}, function(data)
 		{
 			if(data.status > 0)
 			{
 				window.location.replace('/home');
 			}
-			else if(data.status == 0) alert('Username taken');
+			else if(data.status == 0) alert('Email already registered');
 			else alert('Error, please reload the page');
 		});
+<% } else { %>
+		var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+		var string_length = 6;
+		var randomstring = '';
+		for (var i=0; i<string_length; i++) {
+			var rnum = Math.floor(Math.random() * chars.length);
+			randomstring += chars.substring(rnum,rnum+1);
+		}
+		$.post('/answerinvite', {
+			data: {
+				activate: {
+					id: $('#createid').val(),
+					name: $('#createname').val(),
+					pass: randomstring,
+				},
+				register: {
+					client: 1,
+					uid: $('#createid').val(),
+					sid: "<%=locals.survname%>",
+					spass: "<%=locals.survpass%>"
+				}
+			},
+			isNew: 1,
+			uid: $('#createid').val(),
+			uname: $('#createname').val(),
+			upass: randomstring,
+			sname: "<%=locals.survname%>"
+		}, function(data)
+		{
+			if(data.err)
+			{
+				alert(data.err);
+			}
+			else
+			{
+				window.location.replace('/acctrequest?num='+data.num);
+			}
+		});
+<% } %>
 	}
 };
 function swaptocreate()
@@ -63,11 +129,14 @@ function swaptologin()
 	$("#CREATE").slideUp("slow");
 	$("#LOGIN").slideDown("slow");
 };
+<% if(!locals.invitation) { %>
 if(Cookies.get('id')!=''&&Cookies.get('pass')!='') window.location.replace('/home');
+<% } %>
 </script>
 <br/>
 <div id="LOGIN">
 <h1>Login to PSACT</h1>
+<%if(locals.invitation){%><p>to accept survey invitation</p><%}%>
 <input id="loginname" type="text" placeholder="Username" onkeypress="onEnter(event, login);"></input><br/>
 <input id="loginpass" type="password" placeholder="Password" onkeypress="onEnter(event, login);"></input><br/>
 <input id="loginrememberme" type="checkbox">Remember me</input><br/>
