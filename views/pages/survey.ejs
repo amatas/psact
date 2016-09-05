@@ -88,6 +88,28 @@ function changeTitle()
 		});
 	}
 }
+function changeTime()
+{
+	if($('#expmonth').val()!=oldtime.month||$('#expday').val()!=oldtime.day||$('#expyear').val()!=oldtime.year||$('#exphour').val()!=oldtime.hour||$('#expmin').val()!=oldtime.min)
+	{
+		if(!($('#expmonth').val() >= 1 && $('#expmonth').val() <= 12)) $('#expmonth').val(oldtime.month);
+		else if(!($('#expday').val() >= 1 && $('#expday').val() <= 31)) $('#expday').val(oldtime.day);
+		else if(!($('#expyear').val() >= 0)) $('#expyear').val(oldtime.year);
+		else if(!($('#exphour').val() >= 0 && $('#exphour').val() <= 24)) $('#exphour').val(oldtime.hour);
+		else if(!($('#expmin').val() >= 0 && $('#expmin').val() <= 59)) $('#expmin').val(oldtime.min);
+		else
+		{
+			var time = new Date($('#expyear').val(), $('#expmonth').val() - 1, $('#expday').val(), $('#exphour').val(), $('#expmin').val(), 0, 0);
+			$.post('/changetime', {newtime: time.getTime()}, function(data)
+			{
+				if(data)
+				{
+					loadPage();
+				}
+			});
+		}
+	}
+}
 function changeQTitle(id, prevtitle)
 {
 	if($('#q'+id+'titlefield').val() != prevtitle)

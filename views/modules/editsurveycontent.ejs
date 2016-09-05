@@ -63,7 +63,19 @@ CLIENT PASS: <%=pass%>
 EDITOR PASS: <%=editpass%>
 <br/>
 <%var d = new Date(exptime);%>
-<%=' Expires ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
+<script>
+var oldtime={month:"<%=d.getMonth() + 1%>",day:"<%=d.getDate()%>",year:"<%=d.getFullYear()%>",hour:"<%=d.getHours()%>",min:"<%=("0" + d.getMinutes()).slice(-2)%>"};
+</script>
+EXPIRATION DATE: 
+<input id="expmonth" type="number" style="width:32px" onkeypress="onEnter(event, changeTime);" onblur="changeTime();" value="<%=d.getMonth() + 1%>"></input>
+/
+<input id="expday" type="number" style="width:32px" onkeypress="onEnter(event, changeTime);" onblur="changeTime();" value="<%=d.getDate()%>"></input>
+/
+<input id="expyear" type="number" style="width:45px" onkeypress="onEnter(event, changeTime);" onblur="changeTime();" value="<%=d.getFullYear()%>"></input>
+at
+<input id="exphour" type="number" style="width:32px" onkeypress="onEnter(event, changeTime);" onblur="changeTime();" value="<%=d.getHours()%>"></input>
+:
+<input id="expmin" type="number" style="width:32px" onkeypress="onEnter(event, changeTime);" onblur="changeTime();" value="<%=("0" + d.getMinutes()).slice(-2)%>"></input>
 </p>
 <%for(var i = 0; i < questions.length; i++){%>
 <div id="<%=questions[i].id;%>" class="qid"></div>
@@ -112,7 +124,7 @@ Invite specific people to this survey (comma-separated list of emails):
 <button onclick="sendInvites()">Send Invites</button>
 <br/>
 <div id="invitelink">
-	<button onclick="getInviteLink()">Or click here to get a persistent invite link</button>
+	<button onclick="getInviteLink()">Or click here to get a persistent invite URL</button>
 </div>
 <br/>
 <br/>

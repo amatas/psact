@@ -47,7 +47,7 @@ About Me:
 			<button onclick="entertake('<%=client[i].id%>', '<%=client[i].pass%>')">answer</button>
 			<%=client[i].title%>
 			<%d = new Date(client[i].exptime);%>
-			<%=' ends ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+			<%=' ends ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
 			<br/>
 		<%}else{%>
 			<%clientexp = true;%>
@@ -56,9 +56,6 @@ About Me:
 	<br/>
 <%}%>
 <!--SURVEY REGISTRATION FORM-->
-<div id="collapsedregistersurvey">
-<button onclick="expandregistersurvey()">Sign up for a survey</button>
-</div>
 <div id="expandedregistersurvey" style="display:none">
 Register to an Existing Survey:
 <br/>
@@ -79,6 +76,9 @@ Register to an Existing Survey:
 <button onclick="collapseregistersurvey()">Cancel</button>
 </div>
 </div>
+<div id="collapsedregistersurvey">
+<button onclick="expandregistersurvey()">Sign up for a survey</button>
+</div>
 <%if(editor.length > 0){%>
 	<hr>
 	<h4>Editable Surveys:</h4>
@@ -97,15 +97,12 @@ Register to an Existing Survey:
 		<%}else{%>
 			<%ending = ' ended ';%>
 		<%}%>
-		<%=ending + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+		<%=ending + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
 		<br/>
 	<%}%>
 	<br/>
 <%}%>
 <!--SURVEY CREATION FORM-->
-<div id="collapsedcreatesurvey">
-<button onclick="expandcreatesurvey()">Create a new survey</button>
-</div>
 <div id="expandedcreatesurvey" style="display:none">
 Create a New Survey:
 <br/>
@@ -134,7 +131,9 @@ Expires on:
 <button onclick="createsurvey()">Create</button>
 <button onclick="collapsecreatesurvey()">Cancel</button>
 </div>
-<br/>
+<div id="collapsedcreatesurvey">
+<button onclick="expandcreatesurvey()">Create a new survey</button>
+</div>
 <%if(clientexp == true){%>
 	<hr>
 	<h4>Expired Surveys:</h4>
@@ -143,7 +142,7 @@ Expires on:
 			<button onclick="enterview('<%=client[i].id%>', '<%=client[i].pass%>')">view</button>
 			<%=client[i].title%>
 			<%d = new Date(client[i].exptime);%>
-			<%=' ended ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + d.getMinutes()%>
+			<%=' ended ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
 			<br/>
 		<%}%>
 	<%}%>

@@ -66,6 +66,7 @@ app.post('/removeresponse', database.removeResponse);
 app.post('/newquestion', database.newQuestion);
 app.post('/removequestion', database.removeQuestion);
 app.post('/changetitle', database.changeTitle);
+app.post('/changetime', database.changeTime);
 app.post('/changeqtitle', database.changeQTitle);
 app.post('/updatedescription', database.updateDescription);
 app.post('/updateanswers', database.updateAnswers);

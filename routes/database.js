@@ -947,6 +947,77 @@ exports.changeTitle = function(req, res)
 			});
 };
 
+exports.changeTime = function(req, res)
+{
+	var clientlist;
+	var editorlist;
+	var newtime = parseInt(req.body.newtime);
+	var recChange = function(reply)
+	{
+		db.get("SURVEY##" + req.cookies.survname, function(err, body)
+				{
+			if(err) reply();
+			else
+			{
+				clientlist = body.clients;
+				editorlist = body.editors;
+				body.exptime = newtime;
+				db.insert(body, body._id, function(err, body){if(err){recChange(reply);}else{reply();}});
+			}
+				});
+	};
+	var recUpdate = function(sendlist, reply)
+	{
+		if(sendlist.length <= 0)
+		{
+			reply();
+		}
+		else
+		{
+			db.get('USER##' + sendlist[0], function(err, body)
+					{
+				if(err)
+				{
+					sendlist.splice(0, 1);
+					recUpdate(sendlist, reply);
+				}
+				else
+				{
+					for(var i = 0; i < body.client.length; i++)
+					{
+						if(body.client[i].id == req.cookies.survname)
+						{
+							body.client[i].exptime = newtime;
+						}
+					}
+					for(var i = 0; i < body.editor.length; i++)
+					{
+						if(body.editor[i].id == req.cookies.survname)
+						{
+							body.editor[i].exptime = newtime;
+						}
+					}
+					db.insert(body, body._id, function(err, body)
+							{
+						if(!err) sendlist.splice(0, 1);
+						recUpdate(sendlist, reply);
+							});
+				}
+					});
+		}
+	}
+	recChange(function()
+			{
+		recUpdate(clientlist, function()
+				{
+			recUpdate(editorlist, function()
+					{
+				res.json(true);
+					});
+				});
+			});
+};
+
 exports.changeQTitle = function(req, res)
 {
 	var recChange = function(reply)
