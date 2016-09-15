@@ -46,21 +46,15 @@ function getInviteLink()
 }
 </script>
 <p>
-	<button onclick="gohome();">Home</button>
-	<span style="float:right;">
-		<button onclick="logout();">Log Out</button>
-	</span>
-	<br/>
-	<br/>
 	SURVEY TITLE: <input type="text" onkeypress="onEnter(event, changeTitle);" onblur="changeTitle();" style="width: 300px" id="surveytitle" value="<%= title; %>"></input>
 <button onclick="showAll();">Show All</button>
 <button onclick="hideAll();">Hide All</button>
 <br/>
-ID: <%=_id.substr(8)%>
+ID: <b><%=_id.substr(8)%></b>
 <br/>
-CLIENT PASS: <%=pass%>
+CLIENT PASS: <b><%=pass%></b>
 <br/>
-EDITOR PASS: <%=editpass%>
+EDITOR PASS: <b><%=editpass%></b>
 <br/>
 <%var d = new Date(exptime);%>
 <script>

@@ -1,3 +1,4 @@
+<% locals.page = "login"; -%>
 <% include ../modules/head %>
 <script>
 function login()
@@ -50,6 +51,14 @@ function login()
 			if(data.err)
 			{
 				alert(data.err);
+				if(data.gohome)
+				{
+					if($('#loginrememberme').prop('checked'))
+						Cookies.set('name', data.name, 24);
+					else
+						Cookies.set('name', data.name);
+					window.location.replace('/home');
+				}
 			}
 			else
 			{
@@ -129,6 +138,28 @@ function swaptologin()
 	$("#CREATE").slideUp("slow");
 	$("#LOGIN").slideDown("slow");
 };
+function forgotpass()
+{
+	var id = $('#loginname').val();
+	if(id == "")
+	{
+		alert("Input a registered email address to have a password reminder sent to it");
+	}
+	else
+	{
+		$.post('/forgotpass', {id:id}, function(data)
+		{
+			if(data)
+			{
+				alert("Password reminder sent!");
+			}
+			else
+			{
+				alert("Email address not found in database.");
+			}
+		});
+	}
+};
 <% if(!locals.invitation) { %>
 if(Cookies.get('id')!=''&&Cookies.get('pass')!='') window.location.replace('/home');
 <% } %>
@@ -143,6 +174,7 @@ if(Cookies.get('id')!=''&&Cookies.get('pass')!='') window.location.replace('/hom
 <button onclick="login()">Login</button>
 <br/>
 <button onclick="swaptocreate()">Create new account</button>
+<button onclick="forgotpass()">Forgot your password?</button>
 </div>
 <div id="CREATE" style="display:none">
 <h1>Create new PSACT account</h1>

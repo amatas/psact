@@ -55,9 +55,8 @@
 			<%}else{%>
 			<td>
 			<%}%>
-				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write a comment here"><%=yourcomment;%></textarea>
+				<textarea cols=10 id="q<%= id; %>comment" type="textfield" style="width:980px; height:150px" placeholder="Write any comment or edits you have here"><%=yourcomment;%></textarea>
 				<br/>
-				<button style="float:right" onclick="changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), retractQuestion);">Submit</button>
 				<button style="float:right" onclick="changeResponse(<%=id%>, <%=youranswer%>, $('#q<%= id; %>comment').val(), deployQuestion);">Save</button>
 			</td>
 		</tr>

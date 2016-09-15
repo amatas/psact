@@ -4,9 +4,6 @@
 <p>
 <div id="namestatic">
 Welcome back, <%= name; %>.
-<span style="float:right;">
-	<button onclick="logout();">Log Out</button>
-</span>
 </div>
 <div id="nameedit" style="display:none">
 <input type="text" id="editnametext" onkeypress="onEnter(event, changename);" value="<%= name %>">
@@ -44,7 +41,7 @@ About Me:
 				<hr>
 				<h4>Active Surveys:</h4>
 			<%}%>
-			<button onclick="entertake('<%=client[i].id%>', '<%=client[i].pass%>')">answer</button>
+			<button onclick="entertake('<%=client[i].id%>', '<%=client[i].pass%>')">answer/view</button>
 			<%=client[i].title%>
 			<%d = new Date(client[i].exptime);%>
 			<%=' ends ' + (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear() + ' at ' + d.getHours() + ':' + ("0" + d.getMinutes()).slice(-2)%>
@@ -85,7 +82,7 @@ Register to an Existing Survey:
 	<%for(var i = 0; i < editor.length; i++){%>	
 		<button onclick="enteredit('<%=editor[i].id%>', '<%=editor[i].editpass%>')">edit</button>
 		<%if(now.getTime() < editor[i].exptime){%>
-			<button onclick="entertake('<%=editor[i].id%>','<%=editor[i].editpass%>')">answer</button>
+			<button onclick="entertake('<%=editor[i].id%>','<%=editor[i].editpass%>')">answer/view</button>
 		<%}else{%>
 			<button onclick="enterview('<%=editor[i].id%>','<%=editor[i].editpass%>')">view</button>
 		<%}%>

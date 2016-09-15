@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<title>
-		PSACT
+		PIC-Tool
 	</title>
 	<link rel="stylesheet" type="text/css" href="/css">
 	<script src="/script/jquery"></script>
@@ -11,4 +11,20 @@
 	<script src='//cdn.tinymce.com/4/tinymce.min.js'></script>
 </head>
 <body style="background-color:#E6F1F5">
-<h1>PSACT</h1>
+<header>
+<div style="display: inline-block; width:1000px; max-width: 100%;">
+<span style="font-size: 150%; padding-bottom: 0px; margin-bottom: 0px;">
+GPII - Pre-Meeting In-Meeting Consensus Tool (PIC-Tool)
+</span>
+<br/>
+Sponsored by Trace R&D Center and Raising the Floor - International
+<span style="float: right;">
+<% if(locals.page === "survey"){ %>
+<button onclick="gohome();">Home</button>
+<% } %>
+<% if(locals.page === "home" || locals.page === "survey"){ %>
+<button onclick="logout();">Log Out</button>
+<% } %>
+</span>
+</div>
+</header>

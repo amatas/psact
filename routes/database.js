@@ -1257,7 +1257,7 @@ exports.answerInvite = function(req, res)
 				}
 				if(alreadythere)
 				{
-					res.json({err:"Already registered to survey"});
+					res.json({err:"Already registered to survey '"+body.title+"', go to the survey from your homepage", gohome:1, name:username});
 				}
 				else
 				{
@@ -1272,5 +1272,18 @@ exports.answerInvite = function(req, res)
 				}
 			}
 		});
+	});
+};
+
+exports.forgotPass = function(req, res)
+{
+	db.get('USER##'+req.body.id, function(err, body){
+		if(err)
+			res.json(false);
+		else
+		{
+			email(req.body.id, "PSACT Password Reminder", 'Hello, '+body.name+', this is a requested reminder that your PSACT password is '+body.pass);
+			res.json(true);
+		}
 	});
 };

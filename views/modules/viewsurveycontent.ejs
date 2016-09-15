@@ -32,13 +32,7 @@ retractQuestion("<%=questions[i].id;%>");
 }
 </script>
 <p>
-	<button onclick="gohome();">Home</button>
-	<span style="float:right;">
-	<button onclick="logout();">Log Out</button>
-	</span>
-	<br/>
-	<br/>
-	SURVEY TITLE: <%= title; %>
+	SURVEY TITLE: <b><%= title; %></b>
 	<button onclick="showAll();">Show All</button>
 	<button onclick="hideAll();">Hide All</button>
 	<br/>
@@ -51,7 +45,7 @@ retractQuestion("<%=questions[i].id;%>");
 	<table border="1" width="1000px">
 		<tr>
 			<td id="q<%= questions[i].id; %>title" onclick="deployQuestion(<%= questions[i].id; %>);//$('#q<%= questions[i].id; %>data').slideToggle('slow');//alert('AYY');">
-				<%= i + 1; %>: <%= questions[i].title; %>
+				<b><%= i + 1; %>: <%= questions[i].title; %></b>
 			</td>
 		</tr>
 	</table>
